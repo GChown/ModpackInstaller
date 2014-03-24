@@ -122,8 +122,7 @@ public class Gui {
 						 modsDir = new File(System.getProperty("user.home")+ "//AppData//Roaming//.minecraft//mods");
 					 }
 					 else if(OS.equals("mac")){
-						 modsDir = new File(System.getProperty("user.home")+"blahblah");
-						 
+						 modsDir = new File(System.getProperty("user.home")+"//Library//Application Support//minecraft//mods"); 
 					 }
 
 					// if the directory does not exist, create it
