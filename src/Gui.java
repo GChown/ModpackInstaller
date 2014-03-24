@@ -3,10 +3,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -97,17 +99,46 @@ public class Gui {
 			}
 
 			protected void getMods() throws MalformedURLException, IOException {
+				String OS = System.getProperty("os.name").toLowerCase();
 				if (!modlist.exists()) {
 					details.setText("Downloading modlist...");
 					System.out.println("Downloading modlist");
 					saveUrl("modlist.txt", "http://www.gord360.com/modlist.txt");
 					getMods();
-				} else {
+				} 
+				//else if(modlist.isold()?)
+				
+				else {
 					details.setText("Downloading mods...");
 					System.out.println("Reading from modlist");
 					BufferedReader br = new BufferedReader(new FileReader(
 							"modlist.txt"));
 					String line;
+					
+					//test
+					 File modsDir = null;
+					 OS = OS.substring(0,3);
+					 if(OS.equals("win")){
+						 modsDir = new File(System.getProperty("user.home")+ "//AppData//Roaming//.minecraft//mods");
+					 }
+					 else if(OS.equals("mac")){
+						 modsDir = new File(System.getProperty("user.home")+"blahblah");
+						 
+					 }
+
+					// if the directory does not exist, create it
+					if (!modsDir.exists()) {
+					  System.out.println("creating directory: " + "mods");
+					  boolean result = modsDir.mkdir();  
+
+					  if(result) {    
+					  System.out.println("DIR created");  
+					     }
+				 }
+					System.out.print(modsDir.canWrite());
+					// END test
+					
+					
 					try {
 
 						while ((line = br.readLine()) != null) {
@@ -118,7 +149,7 @@ public class Gui {
 										+ " found, not downloading.");
 							} else {
 								System.out.println("getting " + line);
-								saveUrl(System.getProperty("user.home")	+ "//AppData//.minecraft//mods//", line);
+								saveUrl(modsDir.toString() +"//"+ name, line);
 							}
 
 						}
@@ -148,14 +179,17 @@ public class Gui {
 		}
 	}
 
-	public static void saveUrl(String filename, String urlString)
+	public static void saveUrl(String fileName, String urlString)
 			throws MalformedURLException, IOException {
+		
+		
+		
 		BufferedInputStream in = null;
 		FileOutputStream fout = null;
+		//BufferedWriter fout =  null;
 		try {
 			in = new BufferedInputStream(new URL(urlString).openStream());
-			fout = new FileOutputStream(filename);
-
+			fout = new FileOutputStream(fileName);
 			byte data[] = new byte[1024];
 			int count;
 			while ((count = in.read(data, 0, 1024)) != -1) {
