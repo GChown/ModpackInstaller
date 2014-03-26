@@ -121,23 +121,12 @@ public class Gui {
 				Document doc = builder.parse(modlist);
 				NodeList mainList = doc.getDocumentElement().getChildNodes();
 
-				if (!modlist.exists()) {
+				if (!modlist.exists()) { // if the modlist does not exsist, get it
 					details.setText("Downloading modlist...");
 					System.out.println("Downloading modlist");
 					saveUrl("modlist.xml", "http://www.gord360.com/modlist.xml");
 				}
-
-
-				//modlist.xml exists locally, check versions.
-				/* 
-				 * get newmodlist.xml from server
-				 * 
-				 * if versions are the same
-				 * 		do nothing
-				 * if current version < server version
-				 *		copy server file
-				 */
-
+				
 				//Get new modlist from server
 				File newModlist = new File("newModlist.xml");
 				details.setText("Downloading New modlist...");
@@ -150,18 +139,19 @@ public class Gui {
 				NodeList newModNodes = newMSDoc.getDocumentElement().getChildNodes(); //setup new modList nodes
 
 				if(getModListVersion(newModNodes) > getModListVersion(mainList)){//this is a new mod list, overwrite the old one
+			
+					//________Save the newmodlist and overwrite the old one
 					mainList = newModNodes;
-					// this will not overwrite modlist.xml
-
 					//saveUrl("modlist.xml", "http://www.gord360.com/modlist.xml"); //this SHOULD overwrite modlist.xml
 					saveUrl("Modlist.xml", "https://gist.githubusercontent.com/puregame/722112bc3577774f9323/raw/80ff5caef905cd593dc6c479dcce147077d7f630/gistfile1.txt");
-					
 					details.setText("Downloading mods...");
 					System.out.println("Reading from modlist");
 					
 					String line;
 					File modsDir = null;
 
+					
+					//_____________gets OS type and sets minecraft mods directory accordingly_______________
 					String OS = System.getProperty("os.name").toLowerCase();
 					OS = OS.substring(0,3);
 					if(OS.equals("win")){
@@ -174,7 +164,7 @@ public class Gui {
 						//unsuported OS (for now), add more
 					}
 
-					// if the directory does not exist, create it
+					// if the mods directory does not exist, create it
 					if (!modsDir.exists()) {
 						System.out.println("creating directory: " + "mods");
 						boolean result = modsDir.mkdir();  
@@ -183,18 +173,20 @@ public class Gui {
 							System.out.println("DIR created");  
 						}
 					}
+					
 					//get the ModList node
 					Node modListNode = getNodeByID(mainList, "ModList");
 					
-					//put mods into mods (arraylist)
-					putModsToMods(modListNode);
+					//put mods into modsURL (arraylist)
+					putModsToMods(modListNode); //this takes the modlistNode and parses the URLs into an array (the modsURL arraylist)
 					
+					//____________Download mods
 					try {
-						for(int i = 0; i < modsURL.size(); i++){ // for each mod
+						for(int i = 0; i < modsURL.size(); i++){ // for each mod in the arrayList
 							line = modsURL.get(i);
-							String name = line.substring(line.lastIndexOf('/') + 1);
+							String name = line.substring(line.lastIndexOf('/') + 1); //get the local file name from the URL
 							File mod = new File(name);
-							if (mod.exists()) {
+							if (mod.exists()) { //if the mod already exists do not download
 								System.out.println(name
 										+ " found, not downloading.");
 							} else {
@@ -214,35 +206,19 @@ public class Gui {
 		});
 	}
 	
-	private void putModsToMods(Node modListNode){
+	private void putModsToMods(Node modListNode){ //Function to add mod URLs to the modsURL list
 		Node arrayNode = null;
-		for (int j = 0; j < modListNode.getChildNodes().getLength(); j++){// search for the arrayNode in the modListNode
-			if(modListNode.getChildNodes().item(j).getTextContent().equals("modsArray")){
-				//the next node is the arraynode
-				arrayNode = modListNode.getChildNodes().item(j+1); // node of the array of dictionaries containing mods
-			}
-		}
+		arrayNode = getNodeByID(modListNode.getChildNodes(), "modsArray", 1);
 		
 		for(int i = 0; i < arrayNode.getChildNodes().getLength(); i++) {// for each mod in the arrayNode
-			//get it's url
 			Node tempModNode = arrayNode.getChildNodes().item(i);
-			for(int k = 0; k < tempModNode.getChildNodes().getLength(); k++){ // for each node in the mod node
-				if(tempModNode.getChildNodes().item(k).getTextContent().equals("Mod Name")){
-					//this is the URL string
-					System.out.println("Getting mod" + tempModNode.getChildNodes().item(k+1).getTextContent());
-				}
-			}
-			
-			for(int k = 0; k < tempModNode.getChildNodes().getLength(); k++){ // for each node in the mod node
-				if(tempModNode.getChildNodes().item(k).getTextContent().equals("URL")){
-					//this is the URL string
-					modsURL.add(tempModNode.getChildNodes().item(k+1).getTextContent());
-				}
-			}
+			System.out.println("Getting mod: " + getNodeByID(tempModNode.getChildNodes(), "Mod Name", 1).getTextContent());
+			tempModNode = getNodeByID(tempModNode.getChildNodes(), "URL",1);
+			modsURL.add(tempModNode.getTextContent());
 		}
 	}
 
-	private double getModListVersion(NodeList masterList){
+	private double getModListVersion(NodeList masterList){ // function to search the master nodeList for the version information
 		Node infoNode = getNodeByID(masterList, "info");
 		double version = 0;
 		Node versionNode = getNodeByID(infoNode.getChildNodes(), "Version", 1);
@@ -250,7 +226,7 @@ public class Gui {
 		return version;
 	}
 
-	private Node getNodeByID(NodeList inList, String ID, int offset){
+	private Node getNodeByID(NodeList inList, String ID, int offset){ // get a node in the list that is offset from the string ID by the variable offset
 		for(int i = 0; i < inList.getLength(); i++){
 			if(inList.item(i).getTextContent().equals(ID)){
 				return inList.item(i+offset);
@@ -259,7 +235,7 @@ public class Gui {
 		return null;
 	}
 
-	private Node getNodeByID(NodeList inList, String ID){
+	private Node getNodeByID(NodeList inList, String ID){ // find a node that has the text of [String ID]
 		for(int i = 0; i < inList.getLength(); i++){
 			if(getNodeID(inList.item(i)).equals(ID)){
 				return inList.item(i);
@@ -268,7 +244,7 @@ public class Gui {
 		return null;
 	}
 
-	private String getNodeID(Node inNode){
+	private String getNodeID(Node inNode){// get a second level node's ID by its <key>ID</kety><string>IDGOESHERE</string> tags
 		NodeList childNodes = inNode.getChildNodes();
 		for (int i = 0; i < childNodes.getLength(); i++){
 			if(childNodes.item(i).getTextContent().equals("ID")){
