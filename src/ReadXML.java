@@ -14,7 +14,7 @@ import org.xml.sax.SAXException;
 
 
 public class ReadXML {
-	File Modlist = new File("newModlist.xml");
+	File Modlist = new File("Modlist.xml");
 	ArrayList<File> mods = new ArrayList<File>();
 	ArrayList<String> modsURL = new ArrayList<String>();
 	SaveURL saveUrl;
@@ -24,20 +24,13 @@ public class ReadXML {
 
 		if (!Modlist.exists()) { // if the modlist does not exsist, get it
 			System.out.println("Downloading modlist");			
-			saveUrl = new SaveURL("modlist.xml", "http://www.gord360.com/matt/ModList.xml");
+			saveUrl = new SaveURL("Modlist.xml", "http://www.gord360.com/matt/ModList.xml");
 		}
 		
 		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document doc = builder.parse(Modlist);
 		NodeList mainList = doc.getDocumentElement().getChildNodes();
 		
-		//Get new modlist from server
-		
-		System.out.println("Downloading New modlist");
-		//saveUrl("newModlist.xml", "http://www.gord360.com/modlist.xml"); 
-		saveUrl = new SaveURL("newModlist.xml", "http://Gord360.com/matt/ModList.xml");
-		
-
 		Document newMSDoc = builder.parse(Modlist);
 		NodeList newModNodes = newMSDoc.getDocumentElement().getChildNodes(); //setup new modList nodes
 		if(getModListVersion(newModNodes) > getModListVersion(mainList)){//this is a new mod list, overwrite the old one
@@ -79,7 +72,7 @@ public class ReadXML {
 			Node modListNode = getNodeByID(mainList, "ModList");
 			
 			//put mods into modsURL (arraylist)
-			putModsToMods(modListNode); //this takes the modlistNode and parses the URLs into an array (the modsURL arraylist)
+			putModsToArray(modListNode); //this takes the modlistNode and parses the URLs into an array (the modsURL arraylist)
 			
 			//Download mods
 			try {
@@ -103,7 +96,7 @@ public class ReadXML {
 			System.out.println("Done getting mods!");
 		}
 	}
-	private void putModsToMods(Node modListNode){ //Function to add mod URLs to the modsURL list
+	private void putModsToArray(Node modListNode){ //Function to add mod URLs to the modsURL list
 		Node arrayNode = null;
 		arrayNode = getNodeByID(modListNode.getChildNodes(), "modsArray", 1);
 		
@@ -141,7 +134,7 @@ public class ReadXML {
 		return null;
 	}
 
-	private String getNodeID(Node inNode){// get a second level node's ID by its <key>ID</kety><string>IDGOESHERE</string> tags
+	private String getNodeID(Node inNode){// get a second level node's ID by its <key>ID</key><string>IDGOESHERE</string> tags
 		NodeList childNodes = inNode.getChildNodes();
 		for (int i = 0; i < childNodes.getLength(); i++){
 			if(childNodes.item(i).getTextContent().equals("ID")){
