@@ -24,7 +24,6 @@ public class ReadXML {
 	Document modsListDocument = null;
 	SaveURL saveUrl;
 	public enum Status {SUCCESS, FAIL, FILENOTFOUND};
-	//Gui gui = new Gui();
 
 	public void readFileFromServer(){
 		try{
@@ -58,7 +57,7 @@ public class ReadXML {
 	public void getMods(String modsFolder) throws MalformedURLException, IOException, SAXException, ParserConfigurationException {
 		File modsFile = new File(modsFolder);
 		if(!modsFile.exists())
-			modsFile.mkdir(); // create the mods folder if it does not exsist
+			modsFile.mkdir(); // create the mods folder if it does not exist
 
 		NodeList nList = modsListDocument.getElementsByTagName("Mod");
 		//Read the file
@@ -71,14 +70,12 @@ public class ReadXML {
 				saveUrl = new SaveURL(modsFolder + "/" + eElement.getElementsByTagName("Name").item(0).getTextContent(), eElement.getElementsByTagName("URL").item(0).getTextContent());
 			}
 		}
-
 		System.out.println("DONE GETTING MODS");
 
 	}
 
 	public String getListVersion(){
 		NodeList nList = modsListDocument.getElementsByTagName("version");
-		System.out.println(nList.getLength());
 
 		return nList.item(0).getTextContent(); // assume there is no more than 1 listVersion element
 	}

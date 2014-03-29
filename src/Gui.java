@@ -40,13 +40,13 @@ public class Gui {
 
 	public Gui() {
 		//pre GUI setup
-		getModsPath();
-		webReader.readFileFromServer();
+		getModsPath(); //get the mods path based on OS
+		webReader.readFileFromServer(); // read the file from server
 
-		if(localReader.readFileFromSystem(path) == ReadXML.Status.SUCCESS)
+		if(localReader.readFileFromSystem(path) == ReadXML.Status.SUCCESS) // if the file exists on the system
 			listVersions.setText("Latest: " + webReader.getListVersion() + "\t On System: " + localReader.getListVersion());
 
-		else			
+		else // otherwise the version is unknown
 			listVersions.setText("Latest: " + webReader.getListVersion() + "\t On System: " + "Unknown (probably not installed yet)");
 
 			
@@ -140,6 +140,7 @@ public class Gui {
 	private void getModsPath(){
 		String OS = System.getProperty("os.name").toLowerCase();
 		OS = OS.substring(0,3);
+		
 		if(OS.equals("win")){
 			path = System.getProperty("user.home")+ "/AppData/Roaming/.minecraft/mods";
 		}
