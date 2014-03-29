@@ -18,25 +18,41 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import com.sun.org.apache.xerces.internal.util.Status;
+
 public class Gui {
 	JFrame frame = new JFrame();
 	JButton download = new JButton(),
 			update = new JButton();
 	JLabel details = new JLabel("Pick an option");
-	JTextField modsDir;
+	JLabel listVersions = new JLabel("");
+	JLabel TextInput = new JLabel("Install location:");
+	JTextField modsPathTextBox;
 
 	Icon getforge = new ImageIcon("forgeimg.png"), mcmods = new ImageIcon("mcimg.png");
 	SpringLayout sl = new SpringLayout();
 	File forge = new File("ForgeInstaller.jar");
 	SaveURL saveUrl;
-	public ReadXML reader = new ReadXML();
-	public String path;
-	
+	public ReadXML webReader = new ReadXML();
+	public ReadXML localReader = new ReadXML();
+	public String path = "";
+
 
 	public Gui() {
-		path = getModsPath();
-		modsDir = new JTextField(path);
+		//pre GUI setup
+		getModsPath();
+		webReader.readFileFromServer();
+
+		if(localReader.readFileFromSystem(path) == ReadXML.Status.SUCCESS)
+			listVersions.setText("Latest: " + webReader.getListVersion() + "\t On System: " + localReader.getListVersion());
+
+		else			
+			listVersions.setText("Latest: " + webReader.getListVersion() + "\t On System: " + "Unknown (probably not installed yet)");
+
+			
 		
+		//gui setup
+		modsPathTextBox = new JTextField(path);
 		download.setBackground(Color.white);
 		update.setBackground(Color.white);
 		download.setIcon(getforge);
@@ -50,15 +66,23 @@ public class Gui {
 		frame.add(download);
 		frame.add(update);
 		frame.add(details);
-		frame.add(modsDir);
+		frame.add(listVersions);
+		frame.add(TextInput);
+		frame.add(modsPathTextBox);
 		sl.putConstraint(SpringLayout.NORTH, update, 0, SpringLayout.NORTH,
 				download);
 		sl.putConstraint(SpringLayout.WEST, update, 10, SpringLayout.EAST,
 				download);
 		sl.putConstraint(SpringLayout.NORTH, details, 0, SpringLayout.SOUTH,
 				update);
-		sl.putConstraint(SpringLayout.NORTH, modsDir, 0, SpringLayout.SOUTH,
+		sl.putConstraint(SpringLayout.NORTH, TextInput, 10, SpringLayout.SOUTH,
 				details);
+		sl.putConstraint(SpringLayout.NORTH, modsPathTextBox, 0, SpringLayout.SOUTH,
+				TextInput);
+		sl.putConstraint(SpringLayout.NORTH, listVersions, 0, SpringLayout.SOUTH,
+				modsPathTextBox);
+
+
 		frame.setVisible(true);
 		download.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -91,7 +115,7 @@ public class Gui {
 		update.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					reader.getMods(path);
+					webReader.getMods(path);
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
 				} catch (MalformedURLException e1) {
@@ -106,30 +130,27 @@ public class Gui {
 				;
 			}
 		});
-		modsDir.addActionListener(new ActionListener(){
+		modsPathTextBox.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				 String text = modsDir.getText();
-			     path = text;
+				path = modsPathTextBox.getText();
 			}
 		});
-		
+
 	}
-	private String getModsPath(){
-		File modsDir = null;
+	private void getModsPath(){
 		String OS = System.getProperty("os.name").toLowerCase();
 		OS = OS.substring(0,3);
 		if(OS.equals("win")){
-			modsDir = new File(System.getProperty("user.home")+ "//AppData//Roaming//.minecraft//mods");
+			path = System.getProperty("user.home")+ "/AppData/Roaming/.minecraft/mods";
 		}
 		else if(OS.equals("mac")){
-			modsDir = new File(System.getProperty("user.home")+"//Library//Application Support//minecraft//mods"); 
+			path =System.getProperty("user.home")+"/Library/Application Support/minecraft/mods"; 
 		}
 		else{
+			System.out.println("UNSUPORTED OS");
 			//unsuported OS (for now), add more
 		}
-		
-		return modsDir.toString();
 	}
 
-	
+
 }

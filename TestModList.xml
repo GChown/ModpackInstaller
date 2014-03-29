@@ -1,6 +1,5 @@
 <ModListFile>
-	<version>1.0</version>
-
+	<listVersion>1.0</listVersion>
 	<ModList>
 		<Mod>
 			<Name>BuildCraft</Name>
