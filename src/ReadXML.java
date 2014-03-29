@@ -24,7 +24,9 @@ public class ReadXML {
 	//Gui gui = new Gui();
 	
 	
-	public void getMods() throws MalformedURLException, IOException, SAXException, ParserConfigurationException {
+	public void getMods(String modsFolder) throws MalformedURLException, IOException, SAXException, ParserConfigurationException {
+		File modsFile = new File(modsFolder);
+		modsFile.mkdir(); // create the mods folder if it does not exsist
 		//Get file
 		URL xmlURL = new URL("http://gord360.com/matt/TestModList.xml");
 		InputStream xml = xmlURL.openStream();
@@ -41,7 +43,8 @@ public class ReadXML {
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {	 
 				Element eElement = (Element) nNode;
 				//Save the URL with the filename Name
-				saveUrl = new SaveURL(eElement.getElementsByTagName("Name").item(0).getTextContent(), eElement.getElementsByTagName("URL").item(0).getTextContent());
+				System.out.println("Saving" + eElement.getElementsByTagName("Name").item(0).getTextContent());
+				saveUrl = new SaveURL(modsFolder + "/" + eElement.getElementsByTagName("Name").item(0).getTextContent(), eElement.getElementsByTagName("URL").item(0).getTextContent());
 			}
 		}
 		

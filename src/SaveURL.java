@@ -6,7 +6,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class SaveURL {
-	File modsDir;
 
 	public SaveURL(String fileName, String urlString)
 			throws MalformedURLException, IOException {
@@ -16,7 +15,7 @@ public class SaveURL {
 		try {
 			in = new BufferedInputStream(new URL(urlString).openStream());
 			String mcdir;
-			fout = new FileOutputStream(modsDir + fileName);
+			fout = new FileOutputStream(fileName);
 			byte data[] = new byte[1024];
 			int count;
 			while ((count = in.read(data, 0, 1024)) != -1) {

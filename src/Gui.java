@@ -12,6 +12,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -19,19 +20,23 @@ import org.xml.sax.SAXException;
 
 public class Gui {
 	JFrame frame = new JFrame();
-	
 	JButton download = new JButton(),
 			update = new JButton();
 	JLabel details = new JLabel("Pick an option");
+	JTextField modsDir;
 
 	Icon getforge = new ImageIcon("forgeimg.png"), mcmods = new ImageIcon("mcimg.png");
 	SpringLayout sl = new SpringLayout();
 	File forge = new File("ForgeInstaller.jar");
 	SaveURL saveUrl;
 	public ReadXML reader = new ReadXML();
+	public String path;
 	
 
 	public Gui() {
+		path = getModsPath();
+		modsDir = new JTextField(path);
+		
 		download.setBackground(Color.white);
 		update.setBackground(Color.white);
 		download.setIcon(getforge);
@@ -45,12 +50,15 @@ public class Gui {
 		frame.add(download);
 		frame.add(update);
 		frame.add(details);
+		frame.add(modsDir);
 		sl.putConstraint(SpringLayout.NORTH, update, 0, SpringLayout.NORTH,
 				download);
 		sl.putConstraint(SpringLayout.WEST, update, 10, SpringLayout.EAST,
 				download);
 		sl.putConstraint(SpringLayout.NORTH, details, 0, SpringLayout.SOUTH,
 				update);
+		sl.putConstraint(SpringLayout.NORTH, modsDir, 0, SpringLayout.SOUTH,
+				details);
 		frame.setVisible(true);
 		download.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -83,7 +91,7 @@ public class Gui {
 		update.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					reader.getMods();
+					reader.getMods(path);
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
 				} catch (MalformedURLException e1) {
@@ -97,10 +105,30 @@ public class Gui {
 				}
 				;
 			}
-
-			
-
 		});
+		modsDir.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				 String text = modsDir.getText();
+			     path = text;
+			}
+		});
+		
+	}
+	private String getModsPath(){
+		File modsDir = null;
+		String OS = System.getProperty("os.name").toLowerCase();
+		OS = OS.substring(0,3);
+		if(OS.equals("win")){
+			modsDir = new File(System.getProperty("user.home")+ "//AppData//Roaming//.minecraft//mods");
+		}
+		else if(OS.equals("mac")){
+			modsDir = new File(System.getProperty("user.home")+"//Library//Application Support//minecraft//mods"); 
+		}
+		else{
+			//unsuported OS (for now), add more
+		}
+		
+		return modsDir.toString();
 	}
 
 	
