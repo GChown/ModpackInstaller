@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -25,9 +29,13 @@ public class ReadXML {
 	SaveURL saveUrl;
 	public enum Status {SUCCESS, FAIL, FILENOTFOUND};
 
+	public Document getDocumentObject(){
+		return modsListDocument;
+	}
+	
 	public void readFileFromServer(){
 		try{
-			URL xmlURL = new URL("http://gord360.com/matt/TestModList.xml");
+			URL xmlURL = new URL("http://gord360.com/ModList.xml");
 			InputStream xml = xmlURL.openStream();
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
@@ -66,7 +74,7 @@ public class ReadXML {
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {	 
 				Element eElement = (Element) nNode;
 				//Save the URL with the filename Name
-				System.out.println("Saving" + eElement.getElementsByTagName("Name").item(0).getTextContent());
+				System.out.println("Saving: " + eElement.getElementsByTagName("Name").item(0).getTextContent());
 				saveUrl = new SaveURL(modsFolder + "/" + eElement.getElementsByTagName("Name").item(0).getTextContent(), eElement.getElementsByTagName("URL").item(0).getTextContent());
 			}
 		}
@@ -78,5 +86,18 @@ public class ReadXML {
 		NodeList nList = modsListDocument.getElementsByTagName("version");
 
 		return nList.item(0).getTextContent(); // assume there is no more than 1 listVersion element
+	}
+	
+	public void writeDocToFile(String path){
+		try{
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(getDocumentObject());
+			StreamResult streamResult =  new StreamResult(new File(path+"/modList.xml"));
+			transformer.transform(source, streamResult);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 }

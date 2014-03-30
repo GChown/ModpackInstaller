@@ -15,6 +15,10 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.xml.sax.SAXException;
 
@@ -41,16 +45,25 @@ public class Gui {
 	public Gui() {
 		//pre GUI setup
 		getModsPath(); //get the mods path based on OS
+
 		webReader.readFileFromServer(); // read the file from server
 
-		if(localReader.readFileFromSystem(path) == ReadXML.Status.SUCCESS) // if the file exists on the system
+		if(localReader.readFileFromSystem(path) == ReadXML.Status.SUCCESS){ // if the file exists on the system
 			listVersions.setText("Latest: " + webReader.getListVersion() + "\t On System: " + localReader.getListVersion());
+			if(!webReader.getListVersion().equals(localReader.getListVersion())){
+				//if we need to update the modlist
+				System.out.println("Saving modlist from server");
+				webReader.writeDocToFile(path);
+			}
+		}
 
-		else // otherwise the version is unknown
+		else{ // otherwise the version is unknown and localReader.getListVersion will cause an error (filenotfound)
 			listVersions.setText("Latest: " + webReader.getListVersion() + "\t On System: " + "Unknown (probably not installed yet)");
+			webReader.writeDocToFile(path);
+		}
 
-			
-		
+
+
 		//gui setup
 		modsPathTextBox = new JTextField(path);
 		download.setBackground(Color.white);
@@ -140,7 +153,7 @@ public class Gui {
 	private void getModsPath(){
 		String OS = System.getProperty("os.name").toLowerCase();
 		OS = OS.substring(0,3);
-		
+
 		if(OS.equals("win")){
 			path = System.getProperty("user.home")+ "/AppData/Roaming/.minecraft/mods";
 		}
