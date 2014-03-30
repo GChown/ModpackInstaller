@@ -27,6 +27,7 @@ public class ReadXML {
 	ArrayList<String> modsURL = new ArrayList<String>();
 	Document modsListDocument = null;
 	SaveURL saveUrl;
+	Double version;
 	public enum Status {SUCCESS, FAIL, FILENOTFOUND};
 
 	public Document getDocumentObject(){
@@ -82,10 +83,13 @@ public class ReadXML {
 
 	}
 
-	public String getListVersion(){
-		NodeList nList = modsListDocument.getElementsByTagName("version");
-
-		return nList.item(0).getTextContent(); // assume there is no more than 1 listVersion element
+	public double getListVersion(){
+		NodeList nList = modsListDocument.getElementsByTagName("listVersion");
+		version =  Double.parseDouble(nList.item(0).getTextContent()); // assume there is no more than 1 listVersion element
+		return version;
+	}
+	public double getVersion(){
+		return version;
 	}
 	
 	public void writeDocToFile(String path){

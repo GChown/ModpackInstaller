@@ -15,14 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.xml.sax.SAXException;
-
-import com.sun.org.apache.xerces.internal.util.Status;
 
 public class Gui {
 	JFrame frame = new JFrame();
@@ -50,14 +44,12 @@ public class Gui {
 
 		if(localReader.readFileFromSystem(path) == ReadXML.Status.SUCCESS){ // if the file exists on the system
 			listVersions.setText("Latest: " + webReader.getListVersion() + "\t On System: " + localReader.getListVersion());
-			if(!webReader.getListVersion().equals(localReader.getListVersion())){
-				//if we need to update the modlist
-				System.out.println("Saving modlist from server");
-				webReader.writeDocToFile(path);
-			}
+			
+			//TODO: set mods image to update available
 		}
-
+		
 		else{ // otherwise the version is unknown and localReader.getListVersion will cause an error (filenotfound)
+			
 			listVersions.setText("Latest: " + webReader.getListVersion() + "\t On System: " + "Unknown (probably not installed yet)");
 			webReader.writeDocToFile(path);
 		}
@@ -128,7 +120,9 @@ public class Gui {
 		update.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					webReader.getMods(path);
+					System.out.println("Saving modlist from server");
+					webReader.writeDocToFile(path); // save the new list from the server to the file
+					webReader.getMods(path); // get the mods
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
 				} catch (MalformedURLException e1) {
