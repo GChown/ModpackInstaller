@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+
+	<key>ID</key><string>info</string>
+	<key>Version</key><string>1.1</string>
+	
+</dict>
+
+<dict>
+	<key>ID</key><string>ModList</string>
+	<key>modsArray</key><array>
+		<dict>
+			<key>Mod Name</key><string>BuildCraft</string>
+			<key>URL</key><string>https://dl.dropboxusercontent.com/u/34787499/minecraft/1.6.4/%5B1.6.4%5DReiMinimap_v3.4_01.zip</string>
+		</dict>
+		<dict>
+			<key>Mod Name</key><string>codechickencore</string>
+			<key>URL</key><string>http://www.chickenbones.craftsaddle.org/Files/New_Versions/1.6.4/CodeChickenCore%200.9.0.9.jar</string>
+		</dict>
+		
+		
+	</array>
+</dict>
+
+</plist>
