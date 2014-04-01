@@ -27,7 +27,7 @@ public class Gui {
 	JLabel TextInput = new JLabel("Install location:");
 	JTextField modsPathTextBox;
 
-	Icon getforge = new ImageIcon("forgeimg.png"), mcmods = new ImageIcon("mcimg.png");
+	Icon getforge = new ImageIcon("forgeimg.png"), mcmods = new ImageIcon("mcimg.png"), mcimgupdate = new ImageIcon("mcimgupdate.png");
 	SpringLayout sl = new SpringLayout();
 	File forge = new File("ForgeInstaller.jar");
 	SaveURL saveUrl;
@@ -44,8 +44,6 @@ public class Gui {
 
 		if(localReader.readFileFromSystem(path) == ReadXML.Status.SUCCESS){ // if the file exists on the system
 			listVersions.setText("Latest: " + webReader.getListVersion() + "\t On System: " + localReader.getListVersion());
-			
-			//TODO: set mods image to update available
 		}
 		
 		else{ // otherwise the version is unknown and localReader.getListVersion will cause an error (filenotfound)
@@ -86,7 +84,12 @@ public class Gui {
 				TextInput);
 		sl.putConstraint(SpringLayout.NORTH, listVersions, 0, SpringLayout.SOUTH,
 				modsPathTextBox);
-
+		
+		if(webReader.getVersion() > localReader.getVersion()){
+			update.setIcon(mcimgupdate);
+			
+			
+		}
 
 		frame.setVisible(true);
 		download.addActionListener(new ActionListener() {

@@ -104,4 +104,8 @@ public class ReadXML {
 			e.printStackTrace();
 		}
 	}
+
+	public void update() {
+		System.out.println("Updating");
+	}
 }
