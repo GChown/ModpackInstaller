@@ -85,10 +85,8 @@ public class Gui {
 		sl.putConstraint(SpringLayout.NORTH, listVersions, 0, SpringLayout.SOUTH,
 				modsPathTextBox);
 		
-		if(webReader.getVersion() > localReader.getVersion()){
+		if(webReader.getVersion().isBiggerVersion(localReader.getVersion())){
 			update.setIcon(mcimgupdate);
-			
-			
 		}
 
 		frame.setVisible(true);

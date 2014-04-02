@@ -60,6 +60,15 @@ public class Version {
 		return compState.SAME;
 	}
 	
+	public boolean isBiggerVersion(Version otherVersion){
+		compState state = getBiggerVersion(otherVersion);
+		if (state == compState.SELF){
+			return true;
+		}
+		return false;
+	}
+	
+	
 	private int min(int size, int size2) {
 		if (size < size2)
 			return size;
