@@ -25,6 +25,7 @@ public class ReadXML {
 	File Modlist = new File("Modlist.xml");
 	ArrayList<File> mods = new ArrayList<File>();
 	ArrayList<String> modsURL = new ArrayList<String>();
+	ArrayList<Mod> modsArray;
 	Document modsListDocument = null;
 	SaveURL saveUrl;
 	Version modListVersion = null;
@@ -45,6 +46,11 @@ public class ReadXML {
 		catch(Exception e){
 			e.printStackTrace();
 		}
+		populateModsArray();
+	}
+	
+	public void populateModsArray(){
+		
 	}
 
 	public Status readFileFromSystem(String path){
@@ -60,6 +66,7 @@ public class ReadXML {
 		catch(Exception e){
 			e.printStackTrace();
 		}
+		populateModsArray();
 		return Status.SUCCESS;
 	}
 
