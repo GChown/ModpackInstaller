@@ -27,7 +27,13 @@ public class Gui {
 	JLabel TextInput = new JLabel("Install location:");
 	JTextField modsPathTextBox;
 
+	//this version for the JAR 
+	//Icon getforge = new ImageIcon(getClass().getResource("forgeimg.png")), mcmods = new ImageIcon(getClass().getResource("mcimg.png")), mcimgupdate = new ImageIcon(getClass().getResource("mcimgupdate.png"));
+
+	//this version for running from eclipse 
 	Icon getforge = new ImageIcon("forgeimg.png"), mcmods = new ImageIcon("mcimg.png"), mcimgupdate = new ImageIcon("mcimgupdate.png");
+
+
 	SpringLayout sl = new SpringLayout();
 	File forge = new File("ForgeInstaller.jar");
 	SaveURL saveUrl;
@@ -37,6 +43,7 @@ public class Gui {
 
 
 	public Gui() {
+
 		//pre GUI setup
 		getModsPath(); //get the mods path based on OS
 
@@ -45,9 +52,9 @@ public class Gui {
 		if(localReader.readFileFromSystem(path) == ReadXML.Status.SUCCESS){ // if the file exists on the system
 			listVersions.setText("Latest: " + webReader.getListVersion() + "\t On System: " + localReader.getListVersion());
 		}
-		
+
 		else{ // otherwise the version is unknown and localReader.getListVersion will cause an error (filenotfound)
-			
+
 			listVersions.setText("Latest: " + webReader.getListVersion() + "\t On System: " + "Unknown (probably not installed yet)");
 			webReader.writeDocToFile(path);
 		}
@@ -84,11 +91,9 @@ public class Gui {
 				TextInput);
 		sl.putConstraint(SpringLayout.NORTH, listVersions, 0, SpringLayout.SOUTH,
 				modsPathTextBox);
-		
-		if(webReader.getVersion() > localReader.getVersion()){
+
+		if(webReader.getVersion().isBiggerVersion(localReader.getVersion())){
 			update.setIcon(mcimgupdate);
-			
-			
 		}
 
 		frame.setVisible(true);
@@ -122,10 +127,13 @@ public class Gui {
 		});
 		update.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				DownloadProgress dp = new DownloadProgress();
+
 				try {
 					System.out.println("Saving modlist from server");
 					webReader.writeDocToFile(path); // save the new list from the server to the file
 					webReader.getMods(path); // get the mods
+					details.setText("Done getting mods");
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
 				} catch (MalformedURLException e1) {
@@ -138,6 +146,7 @@ public class Gui {
 					e1.printStackTrace();
 				}
 				;
+				dp.close();
 			}
 		});
 		modsPathTextBox.addActionListener(new ActionListener(){

@@ -25,9 +25,10 @@ public class ReadXML {
 	File Modlist = new File("Modlist.xml");
 	ArrayList<File> mods = new ArrayList<File>();
 	ArrayList<String> modsURL = new ArrayList<String>();
+	ArrayList<Mod> modsArray;
 	Document modsListDocument = null;
 	SaveURL saveUrl;
-	Double version;
+	Version modListVersion = null;
 	public enum Status {SUCCESS, FAIL, FILENOTFOUND};
 
 	public Document getDocumentObject(){
@@ -45,6 +46,11 @@ public class ReadXML {
 		catch(Exception e){
 			e.printStackTrace();
 		}
+		populateModsArray();
+	}
+	
+	public void populateModsArray(){
+		
 	}
 
 	public Status readFileFromSystem(String path){
@@ -60,6 +66,7 @@ public class ReadXML {
 		catch(Exception e){
 			e.printStackTrace();
 		}
+		populateModsArray();
 		return Status.SUCCESS;
 	}
 
@@ -83,13 +90,15 @@ public class ReadXML {
 
 	}
 
-	public double getListVersion(){
+	public String getListVersion(){
 		NodeList nList = modsListDocument.getElementsByTagName("listVersion");
-		version =  Double.parseDouble(nList.item(0).getTextContent()); // assume there is no more than 1 listVersion element
-		return version;
+
+		modListVersion = new Version(nList.item(0).getTextContent()); // assume there is no more than 1 listVersion element
+		return modListVersion.getVersion();
 	}
-	public double getVersion(){
-		return version;
+	
+	public Version getVersion(){
+		return modListVersion;
 	}
 	
 	public void writeDocToFile(String path){
