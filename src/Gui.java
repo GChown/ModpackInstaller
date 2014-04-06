@@ -43,7 +43,6 @@ public class Gui {
 
 
 	public Gui() {
-
 		//pre GUI setup
 		getModsPath(); //get the mods path based on OS
 
@@ -165,6 +164,9 @@ public class Gui {
 		}
 		else if(OS.equals("mac")){
 			path =System.getProperty("user.home")+"/Library/Application Support/minecraft/mods"; 
+		}
+		else if(OS.equals("lin")){
+			path = System.getProperty("user.home")+"/.minecraft/mods";
 		}
 		else{
 			System.out.println("UNSUPORTED OS");
