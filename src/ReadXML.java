@@ -37,7 +37,7 @@ public class ReadXML {
 	
 	public void readFileFromServer(){
 		try{
-			URL xmlURL = new URL("http://gord360.com/ModList.xml");
+			URL xmlURL = new URL("http://gord360.com/matt/ModList.xml");
 			InputStream xml = xmlURL.openStream();
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();

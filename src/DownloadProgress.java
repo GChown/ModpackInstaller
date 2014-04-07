@@ -8,7 +8,7 @@ public class DownloadProgress {
 
 
 	JFrame frame = new JFrame();
-	JButton cancel = new JButton("Cancel");
+	//JButton cancel = new JButton("Cancel");
 	JLabel details = new JLabel("Downloading Mods");
 	
 	SpringLayout sl = new SpringLayout();
@@ -24,9 +24,6 @@ public class DownloadProgress {
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(2);
 		frame.add(details);
-		frame.add(cancel);
-		sl.putConstraint(SpringLayout.NORTH, details, 10, SpringLayout.NORTH, cancel);
-		sl.putConstraint(SpringLayout.EAST, details, 0, SpringLayout.WEST, cancel);
 		frame.setVisible(true);
 	}
 	public void close(){
