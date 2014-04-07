@@ -24,8 +24,9 @@ public class Gui {
 			update = new JButton();
 	JLabel details = new JLabel("Pick an option");
 	JLabel listVersions = new JLabel("");
-	JLabel TextInput = new JLabel("Install location:");
+	JLabel TextInput = new JLabel("Install location:"), XMLInput = new JLabel("XML location:");
 	JTextField modsPathTextBox;
+	public static JTextField onlineLocation= new JTextField("http://gord360.com/ModList.xml");
 
 	//this version for the JAR 
 	//Icon getforge = new ImageIcon(getClass().getResource("forgeimg.png")), mcmods = new ImageIcon(getClass().getResource("mcimg.png")), mcimgupdate = new ImageIcon(getClass().getResource("mcimgupdate.png"));
@@ -78,6 +79,8 @@ public class Gui {
 		frame.add(listVersions);
 		frame.add(TextInput);
 		frame.add(modsPathTextBox);
+		frame.add(onlineLocation);
+		frame.add(XMLInput);
 		sl.putConstraint(SpringLayout.NORTH, update, 0, SpringLayout.NORTH,
 				download);
 		sl.putConstraint(SpringLayout.WEST, update, 10, SpringLayout.EAST,
@@ -90,6 +93,11 @@ public class Gui {
 				TextInput);
 		sl.putConstraint(SpringLayout.NORTH, listVersions, 0, SpringLayout.SOUTH,
 				modsPathTextBox);
+		sl.putConstraint(SpringLayout.WEST, onlineLocation, 10, SpringLayout.EAST,	modsPathTextBox);
+		sl.putConstraint(SpringLayout.NORTH, onlineLocation, 0, SpringLayout.NORTH,	modsPathTextBox);
+		sl.putConstraint(SpringLayout.SOUTH, XMLInput, 0, SpringLayout.NORTH,	onlineLocation);
+		sl.putConstraint(SpringLayout.WEST, XMLInput, 0, SpringLayout.WEST,	onlineLocation);
+		
 
 		if(webReader.getVersion().isBiggerVersion(localReader.getVersion())){
 			update.setIcon(mcimgupdate);

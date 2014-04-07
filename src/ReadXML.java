@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 
 public class ReadXML {
 	File Modlist = new File("Modlist.xml");
+	
 	ArrayList<File> mods = new ArrayList<File>();
 	ArrayList<String> modsURL = new ArrayList<String>();
 	ArrayList<Mod> modsArray;
@@ -37,7 +38,7 @@ public class ReadXML {
 	
 	public void readFileFromServer(){
 		try{
-			URL xmlURL = new URL("http://gord360.com/ModList.xml");
+			URL xmlURL = new URL(Gui.onlineLocation.getText());
 			InputStream xml = xmlURL.openStream();
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
