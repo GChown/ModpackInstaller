@@ -14,9 +14,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
 
 public class Gui {
 	JFrame frame = new JFrame();
@@ -32,7 +36,7 @@ public class Gui {
 	//Icon getforge = new ImageIcon(getClass().getResource("forgeimg.png")), mcmods = new ImageIcon(getClass().getResource("mcimg.png")), mcimgupdate = new ImageIcon(getClass().getResource("mcimgupdate.png"));
 
 	//this version for running from eclipse 
-	Icon getforge = new ImageIcon("forgeimg.png"), mcmods = new ImageIcon("mcimg.png"), mcimgupdate = new ImageIcon("mcimgupdate.png");
+	Icon getforge = new ImageIcon("forgeimg.png"), forgUpdateAvailabe = new ImageIcon("forgeimgupdate.png"), mcmods = new ImageIcon("mcimg.png"), mcimgupdate = new ImageIcon("mcimgupdate.png");
 
 
 	SpringLayout sl = new SpringLayout();
@@ -40,36 +44,43 @@ public class Gui {
 	SaveURL saveUrl;
 	public ReadXML webReader = new ReadXML();
 	public ReadXML localReader = new ReadXML();
-	public String path = "";
-
+	private String modsPath = "";
+	private String configPath = "";
 
 	public Gui() {
 		//pre GUI setup
 		getModsPath(); //get the mods path based on OS
 
-		webReader.readFileFromServer(onlineLocation.getText()); // read the file from server
+		//check if modList.xml is on system
 
-		if(localReader.readFileFromSystem(path) == ReadXML.Status.SUCCESS){ // if the file exists on the system
+		update.setIcon(mcmods);
+		webReader.readFileFromServer(onlineLocation.getText()); // read the file from server
+		if(localReader.readFileFromSystem(modsPath) == ReadXML.Status.SUCCESS){ // if the file exists on the system
 			listVersions.setText("Latest: " + webReader.getListVersion() + "\t On System: " + localReader.getListVersion());
-			if(webReader.getVersion().isBiggerVersion(localReader.getVersion())){
+			if(webReader.getVersion().isBiggerVersion(localReader.getVersion())){ // if web version is bigger change update icon
 				update.setIcon(mcimgupdate);
 			}
 		}
 
 		else{ // otherwise the version is unknown and localReader.getListVersion will cause an error (filenotfound)
-
 			listVersions.setText("Latest: " + webReader.getListVersion() + "\t On System: " + "Unknown (probably not installed yet)");
-			webReader.writeDocToFile(path);
+			update.setIcon(mcimgupdate);
+		}
+		
+		//Check if forge is installed.
+		getConfigPath();
+		//check if forge is installed
+		download.setIcon(getforge);
+		if(!isForgeInstalled()){
+			System.out.println("Forge is not installed");
+			download.setIcon(forgUpdateAvailabe);
 		}
 
 
-
 		//gui setup
-		modsPathTextBox = new JTextField(path, 21);
+		modsPathTextBox = new JTextField(modsPath, 21);
 		download.setBackground(Color.white);
 		update.setBackground(Color.white);
-		download.setIcon(getforge);
-		update.setIcon(mcmods);
 		frame.setSize(getforge.getIconWidth()+mcmods.getIconWidth()+100, getforge.getIconHeight()+mcmods.getIconHeight()+10);
 		frame.setTitle("Install Modpack");
 		frame.setLayout(sl);
@@ -135,11 +146,10 @@ public class Gui {
 		update.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DownloadProgress dp = new DownloadProgress();
-
 				try {
 					System.out.println("Saving modlist from server");
-					webReader.writeDocToFile(path); // save the new list from the server to the file
-					webReader.getMods(path); // get the mods
+					webReader.writeDocToFile(modsPath); // save the new list from the server to the file
+					webReader.getMods(modsPath); // get the mods
 					details.setText("Done getting mods");
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
@@ -158,7 +168,8 @@ public class Gui {
 		});
 		modsPathTextBox.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				path = modsPathTextBox.getText();
+				modsPath = modsPathTextBox.getText();
+				getConfigPath();
 			}
 		});
 
@@ -168,18 +179,30 @@ public class Gui {
 		OS = OS.substring(0,3);
 
 		if(OS.equals("win")){
-			path = System.getProperty("user.home")+ "/AppData/Roaming/.minecraft/mods";
+			modsPath = System.getProperty("user.home")+ "/AppData/Roaming/.minecraft/mods";
 		}
 		else if(OS.equals("mac")){
-			path =System.getProperty("user.home")+"/Library/Application Support/minecraft/mods"; 
+			modsPath =System.getProperty("user.home")+"/Library/Application Support/minecraft/mods"; 
 		}
 		else if(OS.equals("lin")){
-			path = System.getProperty("user.home")+"/.minecraft/mods";
+			modsPath = System.getProperty("user.home")+"/.minecraft/mods";
 		}
 		else{
 			System.out.println("UNSUPORTED OS");
 			//unsuported OS (for now), add more
 		}
+	}
+	private void getConfigPath(){
+		//ALWAYS RUN getModsPath() first
+		configPath = modsPath.substring(0, modsPath.lastIndexOf("/"));
+		configPath += "/config";
+		
+	}
+	private boolean isForgeInstalled(){
+		File localModlist = new File(configPath + "/forge.cfg");
+		if(localModlist.isFile())
+			return true;
+		return false;
 	}
 
 
