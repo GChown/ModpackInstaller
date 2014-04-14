@@ -36,9 +36,9 @@ public class ReadXML {
 		return modsListDocument;
 	}
 	
-	public void readFileFromServer(){
+	public void readFileFromServer(String URL){
 		try{
-			URL xmlURL = new URL(Gui.onlineLocation.getText());
+			URL xmlURL = new URL(URL);
 			InputStream xml = xmlURL.openStream();
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
