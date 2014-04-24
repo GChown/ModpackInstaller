@@ -23,12 +23,14 @@ import org.xml.sax.SAXException;
 
 public class ReadXML {
 	File Modlist = new File("Modlist.xml");
-	
+	ArrayList<Mod> modsArray;
 	ArrayList<File> mods = new ArrayList<File>();
 	ArrayList<String> modsURL = new ArrayList<String>();
-	ArrayList<Mod> modsArray;
+	ArrayList<Version> modsVersion = new ArrayList<Version>(); //ToDo
+	
 	Document modsListDocument = null;
 	SaveURL saveUrl;
+	Integer numMods;
 	Version modListVersion = null;
 	public enum Status {SUCCESS, FAIL, FILENOTFOUND};
 
@@ -47,13 +49,9 @@ public class ReadXML {
 		catch(Exception e){
 			e.printStackTrace();
 		}
-		populateModsArray();
-	}
-	
-	public void populateModsArray(){
 		
 	}
-
+	
 	public Status readFileFromSystem(String path){
 		try{
 			File localModlist = new File(path + "/modList.xml");
@@ -67,11 +65,13 @@ public class ReadXML {
 		catch(Exception e){
 			e.printStackTrace();
 		}
-		populateModsArray();
 		return Status.SUCCESS;
 	}
 
 	public void getMods(String modsFolder) throws MalformedURLException, IOException, SAXException, ParserConfigurationException {
+		
+		//ToDo: change this so that the mods are downloaded from the modsArray object
+		
 		File modsFile = new File(modsFolder);
 		if(!modsFile.exists())
 			modsFile.mkdir(); // create the mods folder if it does not exist
@@ -90,6 +90,28 @@ public class ReadXML {
 		System.out.println("DONE GETTING MODS");
 
 	}
+	
+	//ToDo: finish this
+	public void populateModsArray(ReadXML localReadr){ //this should only be called from the webReader instance
+		
+		//add case for localList not found
+		
+		NodeList webList = this.modsListDocument.getElementsByTagName("Mod");
+		NodeList localList = localReadr.getDocumentObject().getElementsByTagName("Mod");
+		
+		numMods = webList.getLength();
+		//for each mod in the web reader
+		for (int i = 0; i < numMods; i++){
+			//get the web mod NAME string to a String object
+			
+			//see if that string exists in the localList
+			
+			//if it does, add to the mods array
+			modsArray.set(i, new Mod(NlocalVer, NwebVer, NlocalPath, NwebPath, Nname)); //replace these with real values
+			
+		}
+		
+	}
 
 	public String getListVersion(){
 		NodeList nList = modsListDocument.getElementsByTagName("listVersion");
@@ -97,7 +119,7 @@ public class ReadXML {
 		modListVersion = new Version(nList.item(0).getTextContent()); // assume there is no more than 1 listVersion element
 		return modListVersion.getVersion();
 	}
-	
+
 	public Version getVersion(){
 		return modListVersion;
 	}
