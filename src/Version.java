@@ -3,6 +3,7 @@ import java.util.ArrayList;
 public class Version {
 	ArrayList<Integer> intList = new ArrayList<Integer>();
 	public enum compState{SELF, OTHER, SAME}; //comparison state
+	public String versionString = "";
 	
 	
 	public Version(String versionString){
@@ -10,31 +11,33 @@ public class Version {
 	}
 	
 	public void parseVersion(String inString){
+		try{
 		if(inString.contains(".")){
 			// there is more than one integer
 			int occurances = countOccurrencesOf(inString, '.');
 			for(int i = 0; i < occurances; i++){
 				int nextOccurance = inString.indexOf('.');
 				String number = inString.substring(0, nextOccurance);
+				versionString += inString.substring(0, nextOccurance);
 				intList.add(Integer.parseInt(number));
-				
 				inString = inString.substring(nextOccurance +1 );
+				if(i < occurances-1){
+					versionString+=".";
+				}
 			}
 			intList.add(Integer.parseInt(inString));
 		}
 		else { // otherwise its just one number
 			intList.add(Integer.parseInt(inString));
 		}
+		}
+		catch(NumberFormatException e){
+			intList.add(0);
+		}
 	}
 
 	public String getVersion(){
-		String version = "";
-		for(int i = 0; i < intList.size()-1; i++){
-			version += intList.get(i).toString() + ".";
-		}
-		version += intList.get(intList.size()-1).toString();
-		
-		return version;
+		return versionString;
 	}
 	
 	public compState getBiggerVersion(Version otherVersion){
