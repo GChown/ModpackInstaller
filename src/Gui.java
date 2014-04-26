@@ -57,12 +57,14 @@ public class Gui {
 		//check if modList.xml is on system
 
 		update.setIcon(mcmods);
+		boolean localAvailable = false;
 		webReader.readFileFromServer(onlineLocation.getText()); // read the file from server
 		if(localReader.readFileFromSystem(modsPath) == ReadXML.Status.SUCCESS){ // if the file exists on the system
 			listVersions.setText("ModList versions| Latest: " + webReader.getListVersion() + "\t On System: " + localReader.getListVersion());
 			if(webReader.getVersion().isBiggerVersion(localReader.getVersion())){ // if web version is bigger change update icon
 				update.setIcon(mcimgupdate);
 			}
+			localAvailable = true;
 		}
 
 		else{ // otherwise the version is unknown and localReader.getListVersion will cause an error (filenotfound)
@@ -70,7 +72,7 @@ public class Gui {
 			update.setIcon(mcimgupdate);
 		}
 		
-		webReader.populateModsArray(localReader); //ToDo: Add case where localVersions are not there
+		webReader.populateModsArray(localReader, localAvailable, modsPath); //ToDo: Add case where localVersions are not there
 		
 		//Check if forge is installed.
 		getConfigPath();

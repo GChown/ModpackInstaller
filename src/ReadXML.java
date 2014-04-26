@@ -23,10 +23,7 @@ import org.xml.sax.SAXException;
 
 public class ReadXML {
 	File Modlist = new File("Modlist.xml");
-	ArrayList<Mod> modsArray;
-	ArrayList<File> mods = new ArrayList<File>();
-	ArrayList<String> modsURL = new ArrayList<String>();
-	ArrayList<Version> modsVersion = new ArrayList<Version>(); //ToDo
+	ArrayList<Mod> modsArray = new ArrayList<Mod>();
 	
 	Document modsListDocument = null;
 	SaveURL saveUrl;
@@ -70,45 +67,66 @@ public class ReadXML {
 
 	public void getMods(String modsFolder) throws MalformedURLException, IOException, SAXException, ParserConfigurationException {
 		
-		//ToDo: change this so that the mods are downloaded from the modsArray object
-		
 		File modsFile = new File(modsFolder);
 		if(!modsFile.exists())
 			modsFile.mkdir(); // create the mods folder if it does not exist
-
-		NodeList nList = modsListDocument.getElementsByTagName("Mod");
+		
 		//Read the file
-		for (int temp = 0; temp < nList.getLength(); temp++) {
-			Node nNode = nList.item(temp);	 
-			if (nNode.getNodeType() == Node.ELEMENT_NODE) {	 
-				Element eElement = (Element) nNode;
-				//Save the URL with the filename Name
-				System.out.println("Saving: " + eElement.getElementsByTagName("Name").item(0).getTextContent());
-				saveUrl = new SaveURL(modsFolder + "/" + eElement.getElementsByTagName("Name").item(0).getTextContent(), eElement.getElementsByTagName("URL").item(0).getTextContent());
-			}
+		for (int temp = 0; temp < modsArray.size(); temp++) {
+				System.out.println("Saving: " + modsArray.get(temp).name);
+				saveUrl = new SaveURL(modsFolder + "/" + modsArray.get(temp).name, modsArray.get(temp).webPath);
 		}
 		System.out.println("DONE GETTING MODS");
 
 	}
 	
-	//ToDo: finish this
-	public void populateModsArray(ReadXML localReadr){ //this should only be called from the webReader instance
-		
-		//add case for localList not found
-		
+	public void populateModsArray(ReadXML localReadr, boolean localListAvailable, String modsFolder){ //this should only be called from the webReader instance
 		NodeList webList = this.modsListDocument.getElementsByTagName("Mod");
+		numMods = webList.getLength();
+		
+		if(!localListAvailable){
+			// populate modsArray with webList
+			for (int i = 0; i < numMods; i++){
+				Node nNode = webList.item(i);	 
+				Element eElement = (Element) nNode;
+				
+				String URL = eElement.getElementsByTagName("URL").item(0).getTextContent();
+				String Name = eElement.getElementsByTagName("Name").item(0).getTextContent();
+				
+				modsArray.set(i, new Mod(URL, Name));
+			}
+			return; // mods array is populated, get outta here!
+		}
+		
+		
 		NodeList localList = localReadr.getDocumentObject().getElementsByTagName("Mod");
 		
-		numMods = webList.getLength();
 		//for each mod in the web reader
 		for (int i = 0; i < numMods; i++){
+			Node webNode = webList.item(i);	 
+			Element webElement = (Element) webNode;
+			
+			Node localNode = localList.item(i);
+			Element localElement = (Element) localNode;
+			
 			//get the web mod NAME string to a String object
+			String newURL = webElement.getElementsByTagName("URL").item(0).getTextContent();
+			String oldURL = localElement.getElementsByTagName("URL").item(0).getTextContent();
+			String Name = webElement.getElementsByTagName("Name").item(0).getTextContent();
+			String Path = modsFolder + "/" + localElement.getElementsByTagName("Name").item(0).getTextContent();
+			String webVersionString = webElement.getElementsByTagName("modVersion").item(0).getTextContent();
+			String localVersionString = localElement.getElementsByTagName("modVersion").item(0).getTextContent();
+			Version webVersion = new Version(webVersionString);
+			Version localVersion = new Version(localVersionString);
 			
-			//see if that string exists in the localList
+			/* debug code
+			System.out.println("web version: " + webVersion.getVersion());
+			System.out.println("local version: " + localVersion.getVersion());
+			System.out.println("Bigger version:" + webVersion.isBiggerVersion(localVersion) );
+			*/
 			
-			//if it does, add to the mods array
-			modsArray.set(i, new Mod(NlocalVer, NwebVer, NlocalPath, NwebPath, Nname)); //replace these with real values
-			
+			if( (webVersionString.compareTo(localVersionString) != 0) || (oldURL.compareTo(newURL) != 0) || (webVersion.isBiggerVersion(localVersion))) // we need to add this one
+				modsArray.add(new Mod(localVersion, webVersion, Path, newURL, Name));
 		}
 		
 	}
