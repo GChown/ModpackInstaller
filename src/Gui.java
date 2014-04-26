@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -23,6 +24,9 @@ import org.xml.sax.SAXException;
 
 
 public class Gui {
+	
+	
+	JTextField onlineLocation= new JTextField("http://gord360.com/ModList.xml");
 	JFrame frame = new JFrame();
 	JButton download = new JButton(),
 			update = new JButton();
@@ -30,7 +34,6 @@ public class Gui {
 	JLabel listVersions = new JLabel("");
 	JLabel TextInput = new JLabel("Install location:"), XMLInput = new JLabel("XML location:");
 	JTextField modsPathTextBox;
-	public static JTextField onlineLocation= new JTextField("http://gord360.com/ModList.xml");
 
 	//this version for the JAR 
 	//Icon getforge = new ImageIcon(getClass().getResource("forgeimg.png")), mcmods = new ImageIcon(getClass().getResource("mcimg.png")), mcimgupdate = new ImageIcon(getClass().getResource("mcimgupdate.png"));
@@ -54,18 +57,22 @@ public class Gui {
 		//check if modList.xml is on system
 
 		update.setIcon(mcmods);
+		boolean localAvailable = false;
 		webReader.readFileFromServer(onlineLocation.getText()); // read the file from server
 		if(localReader.readFileFromSystem(modsPath) == ReadXML.Status.SUCCESS){ // if the file exists on the system
-			listVersions.setText("Latest: " + webReader.getListVersion() + "\t On System: " + localReader.getListVersion());
+			listVersions.setText("ModList versions| Latest: " + webReader.getListVersion() + "\t On System: " + localReader.getListVersion());
 			if(webReader.getVersion().isBiggerVersion(localReader.getVersion())){ // if web version is bigger change update icon
 				update.setIcon(mcimgupdate);
 			}
+			localAvailable = true;
 		}
 
 		else{ // otherwise the version is unknown and localReader.getListVersion will cause an error (filenotfound)
-			listVersions.setText("Latest: " + webReader.getListVersion() + "\t On System: " + "Unknown (probably not installed yet)");
+			listVersions.setText("ModList versions| Latest: " + webReader.getListVersion() + "\t On System: " + "Unknown (probably not installed yet)");
 			update.setIcon(mcimgupdate);
 		}
+		
+		webReader.populateModsArray(localReader, localAvailable, modsPath); //ToDo: Add case where localVersions are not there
 		
 		//Check if forge is installed.
 		getConfigPath();
@@ -171,8 +178,11 @@ public class Gui {
 				getConfigPath();
 			}
 		});
-
 	}
+
+	
+
+	
 	private void getModsPath(){
 		String OS = System.getProperty("os.name").toLowerCase();
 		OS = OS.substring(0,3);

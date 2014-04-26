@@ -23,6 +23,11 @@ public class Mod {
 		name = Nname;
 		
 	}
+	public Mod(String NwebPath, String Nname){
+		webPath = NwebPath;
+		isBigger = VersionType.WEB;
+		name = Nname;
+	}
 
 	private VersionType getIsBigger(){
 		if (webVer.getBiggerVersion(localVer) == Version.compState.SELF)
