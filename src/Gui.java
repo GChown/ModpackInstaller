@@ -247,15 +247,15 @@ public class Gui {
 			String Path = modsFolder + "/" + webElement.getElementsByTagName("Name").item(0).getTextContent();
 			Version webVersion = new Version(webVersionString);
 			modsArray.add(new Mod(newURL, Name, webVersion, Path));
+			
 		}
 
 		if(localListAvailable){ // if the local list is available, compare it to the web
-			
 			//get local list data
 			NodeList localList = localReader.getDocumentObject().getElementsByTagName("Mod");
 			System.out.println(localList.getLength());
 			int numModsLocal = localList.getLength();
-			
+
 			//DELTE all mods that are in the local list AND (are diffrent versions OR have different URLs)
 			for (int i = 0; i < numModsLocal; i++){
 				Node localNode = localList.item(i); // get the i'th mod in the local node list
@@ -273,12 +273,26 @@ public class Gui {
 						break;
 					}
 				}
-				if (numInModsArray == -1)//this mod isn't in the web version, we can't do anything else
+				if (numInModsArray == -1)//this mod isn't in the web version, we can't do anything else, maybe delete local mod?
 					continue; //  continue variable (i) for loop
-
-				if( (webVersionString.compareTo(localVersionString) == 0) || (localURL.compareTo(modsArray.get(numInModsArray).webPath) == 0) || (! modsArray.get(numInModsArray).webVer.isBiggerVersion(localVersion))); // we need to add this one
-				modsArray.remove(numInModsArray);
+				
+				//check to see if the file exsists
+				File Modlist = new File(modsArray.get(numInModsArray).localPath);
+				boolean localFileExsists = false;
+				if(Modlist.isFile())
+					localFileExsists = true;
+				
+				// if the URLs are different
+				//OR the versions are different
+				//OR the file does not exsist
+				//THEN redownload (don't remove from modsArray)
+				if( localFileExsists && (!modsArray.get(numInModsArray).webVer.isBiggerVersion(localVersion)) && (localURL.compareTo(modsArray.get(numInModsArray).webPath) == 0)){
+					System.out.println("Removing " + modsArray.get(numInModsArray).name + "from modsArray");
+					modsArray.remove(numInModsArray);
+				}
 			}
+
+			//Add 
 		}
 	}
 }
