@@ -23,9 +23,11 @@ public class Mod {
 		name = Nname;
 		
 	}
-	public Mod(String NwebPath, String Nname){
+	public Mod(String NwebPath, String Nname, Version NwebVer, String NlocalPath){
 		webPath = NwebPath;
+		localPath = NlocalPath;
 		isBigger = VersionType.WEB;
+		webVer = NwebVer;
 		name = Nname;
 	}
 
