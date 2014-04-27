@@ -36,10 +36,10 @@ public class Gui {
 	JTextField modsPathTextBox;
 
 	//this version for the JAR 
-	//Icon getforge = new ImageIcon(getClass().getResource("forgeimg.png")), mcmods = new ImageIcon(getClass().getResource("mcimg.png")), mcimgupdate = new ImageIcon(getClass().getResource("mcimgupdate.png"));
+	Icon getforge = new ImageIcon(getClass().getResource("forgeimg.png")), forgUpdateAvailabe = new ImageIcon(getClass().getResource("forgeimgupdate.png")), mcmods = new ImageIcon(getClass().getResource("mcimg.png")), mcimgupdate = new ImageIcon(getClass().getResource("mcimgupdate.png"));
 
 	//this version for running from eclipse 
-	Icon getforge = new ImageIcon("forgeimg.png"), forgUpdateAvailabe = new ImageIcon("forgeimgupdate.png"), mcmods = new ImageIcon("mcimg.png"), mcimgupdate = new ImageIcon("mcimgupdate.png");
+	//Icon getforge = new ImageIcon("forgeimg.png"), forgUpdateAvailabe = new ImageIcon("forgeimgupdate.png"), mcmods = new ImageIcon("mcimg.png"), mcimgupdate = new ImageIcon("mcimgupdate.png");
 
 
 	SpringLayout sl = new SpringLayout();
