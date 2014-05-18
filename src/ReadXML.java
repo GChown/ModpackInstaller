@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -35,17 +36,23 @@ public class ReadXML {
 		return modsListDocument;
 	}
 	
-	public void readFileFromServer(String URL){
+	public int readFileFromServer(String URL){
 		try{
 			URL xmlURL = new URL(URL);
 			InputStream xml = xmlURL.openStream();
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			modsListDocument = db.parse(xml);
+			return 0;
+		}
+		catch(UnknownHostException e){
+			return -1;
 		}
 		catch(Exception e){
 			e.printStackTrace();
+			return -2;
 		}
+		
 		
 	}
 	

@@ -8,13 +8,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
+import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Element;
@@ -35,11 +29,12 @@ public class Gui {
 	JLabel TextInput = new JLabel("Install location:"), XMLInput = new JLabel("XML location:");
 	JTextField modsPathTextBox;
 
+	Notification notice = new Notification();
+	
 	//this version for the JAR 
-	Icon getforge = new ImageIcon(getClass().getResource("forgeimg.png")), forgUpdateAvailabe = new ImageIcon(getClass().getResource("forgeimgupdate.png")), mcmods = new ImageIcon(getClass().getResource("mcimg.png")), mcimgupdate = new ImageIcon(getClass().getResource("mcimgupdate.png"));
-
+	//Icon getforge = new ImageIcon(getClass().getResource("forgeimg.png")), forgUpdateAvailabe = new ImageIcon(getClass().getResource("forgeimgupdate.png")), mcmods = new ImageIcon(getClass().getResource("mcimg.png")), mcimgupdate = new ImageIcon(getClass().getResource("mcimgupdate.png"));
 	//this version for running from eclipse 
-	//Icon getforge = new ImageIcon("forgeimg.png"), forgUpdateAvailabe = new ImageIcon("forgeimgupdate.png"), mcmods = new ImageIcon("mcimg.png"), mcimgupdate = new ImageIcon("mcimgupdate.png");
+	Icon getforge = new ImageIcon("forgeimg.png"), forgUpdateAvailabe = new ImageIcon("forgeimgupdate.png"), mcmods = new ImageIcon("mcimg.png"), mcimgupdate = new ImageIcon("mcimgupdate.png");
 
 
 	SpringLayout sl = new SpringLayout();
@@ -56,13 +51,7 @@ public class Gui {
 		//pre GUI setup
 		getModsPath(); //get the mods path based on OS
 
-		//check if modList.xml is on system
-
-
 		compareVersions();
-
-
-		//Check if forge is installed.
 		getConfigPath();
 		//check if forge is installed
 		download.setIcon(getforge);
@@ -109,6 +98,10 @@ public class Gui {
 
 
 		frame.setVisible(true);
+		System.out.println(notice.getCurrentTitle());
+		if(notice.getCurrentTitle() == "ERROR"){// if there is an error to show
+			notice.show();
+		}
 		download.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!forge.exists()) {
@@ -139,7 +132,7 @@ public class Gui {
 		});
 		update.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DownloadProgress dp = new DownloadProgress();
+				notice.showNotice("Downloading Mods", " ");
 				try {
 					modsPath = modsPathTextBox.getText();
 					webReader.readFileFromServer(onlineLocation.getText());
@@ -160,8 +153,7 @@ public class Gui {
 				} catch (ParserConfigurationException e1){
 					e1.printStackTrace();
 				}
-				;
-				dp.close();
+				notice.close();
 			}
 		});
 		modsPathTextBox.addActionListener(new ActionListener(){
@@ -181,23 +173,30 @@ public class Gui {
 
 	private void compareVersions(){ // update GUI and modsArray based on new information from user
 		update.setIcon(mcmods);
-		webReader.readFileFromServer(onlineLocation.getText());
+		int temp = webReader.readFileFromServer(onlineLocation.getText());
+		if(temp == -1){
+			//error getting file
+			details.setText("ERROR CONNECTING TO SERVER");
+			notice.showNotice("ERROR", "COULD NOT CONNECT TO SERVER");
+		}
 		boolean localAvailable = false;
 		//get list versions and populate mods array
-		if(localReader.readFileFromSystem(modsPath) == ReadXML.Status.SUCCESS){ // if the file exists on the system
-			listVersions.setText("ModList versions| Latest: " + webReader.getListVersion() + "\t On System: " + localReader.getListVersion());
-			if(webReader.getVersion().isBiggerVersion(localReader.getVersion())){ // if web version is bigger change update icon
+		if(temp == 0){
+			if(localReader.readFileFromSystem(modsPath) == ReadXML.Status.SUCCESS){ // if the file exists on the system
+				listVersions.setText("ModList versions| Latest: " + webReader.getListVersion() + "\t On System: " + localReader.getListVersion());
+				if(webReader.getVersion().isBiggerVersion(localReader.getVersion())){ // if web version is bigger change update icon
+					update.setIcon(mcimgupdate);
+				}
+				localAvailable = true;
+			}
+
+			else{ // otherwise the version is unknown and localReader.getListVersion will cause an error (filenotfound)
+				listVersions.setText("ModList versions| Latest: " + webReader.getListVersion() + "\t On System: " + "Unknown (probably not installed yet)");
 				update.setIcon(mcimgupdate);
 			}
-			localAvailable = true;
+			populateModsArray(localAvailable, modsPath); 
 		}
 
-		else{ // otherwise the version is unknown and localReader.getListVersion will cause an error (filenotfound)
-			listVersions.setText("ModList versions| Latest: " + webReader.getListVersion() + "\t On System: " + "Unknown (probably not installed yet)");
-			update.setIcon(mcimgupdate);
-		}
-
-		populateModsArray(localAvailable, modsPath); 
 	}
 
 
@@ -247,7 +246,7 @@ public class Gui {
 			String Path = modsFolder + "/" + webElement.getElementsByTagName("Name").item(0).getTextContent();
 			Version webVersion = new Version(webVersionString);
 			modsArray.add(new Mod(newURL, Name, webVersion, Path));
-			
+
 		}
 
 		if(localListAvailable){ // if the local list is available, compare it to the web
@@ -275,13 +274,13 @@ public class Gui {
 				}
 				if (numInModsArray == -1)//this mod isn't in the web version, we can't do anything else, maybe delete local mod?
 					continue; //  continue variable (i) for loop
-				
+
 				//check to see if the file exsists
 				File Modlist = new File(modsArray.get(numInModsArray).localPath);
 				boolean localFileExsists = false;
 				if(Modlist.isFile())
 					localFileExsists = true;
-				
+
 				// if the URLs are different
 				//OR the versions are different
 				//OR the file does not exsist
