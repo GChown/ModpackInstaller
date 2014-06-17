@@ -28,7 +28,6 @@ public class Gui {
 	JLabel listVersions = new JLabel("");
 	JLabel TextInput = new JLabel("Install location:"), XMLInput = new JLabel("XML location:");
 	JTextField modsPathTextBox;
-
 	Notification notice = new Notification();
 	
 	//this version for the JAR 
@@ -38,16 +37,18 @@ public class Gui {
 
 
 	SpringLayout sl = new SpringLayout();
-	File forge = new File("ForgeInstaller.jar");
+	
 
 	ArrayList<Mod> modsArray = new ArrayList<Mod>();
 	SaveURL saveUrl;
 	public ReadXML webReader = new ReadXML();
 	public ReadXML localReader = new ReadXML();
+	public ReadXML fReader = new ReadXML();
 	private String modsPath = "";
 	private String configPath = "";
-
+	File forge;
 	public Gui() {
+		
 		//pre GUI setup
 		getModsPath(); //get the mods path based on OS
 
@@ -102,13 +103,14 @@ public class Gui {
 		if(notice.getCurrentTitle() == "ERROR"){// if there is an error to show
 			notice.show();
 		}
+		forge = new File("ForgeInstaller" + webReader.getfVersion() + ".jar");
 		download.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!forge.exists()) {
 					try {
 						details.setText("Downloading Forge...");
-						saveUrl = new SaveURL("ForgeInstaller.jar",
-								"http://files.minecraftforge.net/maven/net/minecraftforge/forge/1.6.4-9.11.1.965/forge-1.6.4-9.11.1.965-installer.jar");
+						saveUrl = new SaveURL("ForgeInstaller" + webReader.getfVersion() + ".jar",
+								"http://files.minecraftforge.net/maven/net/minecraftforge/forge/" + webReader.getfVersion()+"/forge-"+webReader.getfVersion()+"-installer.jar");
 					} catch (MalformedURLException f) {
 						f.printStackTrace();
 					} catch (IOException f) {

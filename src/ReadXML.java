@@ -31,7 +31,7 @@ public class ReadXML {
 	Integer numModsLocal;
 	Version modListVersion = null;
 	public enum Status {SUCCESS, FAIL, FILENOTFOUND};
-
+	public String fVersion;
 	public Document getDocumentObject(){
 		return modsListDocument;
 	}
@@ -98,6 +98,11 @@ public class ReadXML {
 
 	public Version getVersion(){
 		return modListVersion;
+	}
+	
+	public String getfVersion(){		
+		NodeList nList = modsListDocument.getElementsByTagName("forgeVersion");
+		return nList.item(0).getTextContent();
 	}
 	
 	public void writeDocToFile(String path){
