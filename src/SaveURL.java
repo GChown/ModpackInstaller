@@ -1,5 +1,6 @@
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -8,7 +9,7 @@ import java.net.URL;
 public class SaveURL {
 
 	public SaveURL(String fileName, String urlString)
-			throws MalformedURLException, IOException {
+			throws MalformedURLException, IOException, FileNotFoundException{
 		BufferedInputStream in = null;
 		FileOutputStream fout = null;
 		// BufferedWriter fout = null;
